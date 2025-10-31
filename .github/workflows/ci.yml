@@ -1,0 +1,44 @@
+name: Continuous Integration
+
+# When to run this workflow
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# Define the jobs to run
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js environment (if project uses Node)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: Run linter (checks code style)
+      - name: Run Linter
+        run: npm run lint --if-present
+
+      # Step 5: Run tests
+      - name: Run Tests
+        run: npm test --if-present
+
+      # Step 6: Upload test results (optional)
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
